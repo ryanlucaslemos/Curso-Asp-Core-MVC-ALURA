@@ -7,30 +7,30 @@ using System.Threading.Tasks;
 
 namespace CasaDoCodigo.Repositories
 {
-    public class ProdutoRepository : IProdutoRepository
+    public class ProdutoRepository : BaseRepository<Produto>, IProdutoRepository
     {
-        private readonly ApplicationContext contexto;
-
-        public ProdutoRepository(ApplicationContext contexto)
+        public ProdutoRepository(ApplicationContext contexto) : base(contexto)
         {
-            this.contexto = contexto;
         }
 
         public IList<Produto> GetProdutos()
         {
-            return contexto.Set<Produto>().ToList();
+            return dbset.ToList();
         }
 
         public void SaveProdutos(List<Livro> livros)
         {
-            //foreach (var livro in livros)
-            //{
-            //    contexto.Set<Produto>().Add(new Produto(livro.Codigo, livro.Nome, livro.Preco));
-            //}
+            foreach (var livro in livros)
+            {
+                if (!dbset.Where(p => p.Codigo == livro.Codigo).Any())
+                {
+                    dbset.Add(new Produto(livro.Codigo, livro.Nome, livro.Preco));
+                }
+            }
 
-            //contexto.SaveChanges();
+            contexto.SaveChanges();
         }
- 
+
     }
     public class Livro
     {
